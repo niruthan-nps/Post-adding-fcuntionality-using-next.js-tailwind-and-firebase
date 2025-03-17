@@ -46,7 +46,7 @@ export default function Sidebar() {
         <HiHome size={50} className="mr-2" />
         <span className="font-bold hidden sm:inline xl:inline">Home</span>
       </Link>
-      <button className="bg-blue-400 text-white rounded-full hover:brightness-95 transition-all duration-200 w-48 h-9 shadow-md">Sign in</button>
+      <button className="bg-blue-400 text-white rounded-full hover:brightness-95 transition-all duration-200 w-48 h-9 shadow-md font-semibold">Sign in</button>
     </div>
   );
 }
