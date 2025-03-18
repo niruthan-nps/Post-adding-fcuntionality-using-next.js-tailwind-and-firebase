@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import News from "@/components/News";
+import SessionWrapper from "@/components/SessionWrapper"; // Import the SessionWrapper component
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,6 +21,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
+    <SessionWrapper>
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -42,6 +44,7 @@ export default function RootLayout({ children }) {
 
       </body>
     </html>
+    </SessionWrapper>
   );
 }
 
