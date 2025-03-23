@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { HiDotsHorizontal } from 'react-icons/hi';
+import Icons from './Icons';
 // import LikeSection from './LikeSection';
 // import CommentSection from './CommentSection';
 
 export default function Post({ post, id }) {
   return (
-    <div className='flex p-3 border-gray-200'>
+    <div className='flex p-3 border-gray-200 hover:bg-gray-100'>
       <img
         src={post?.profileImg}
         alt='profile'
@@ -14,7 +15,7 @@ export default function Post({ post, id }) {
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-1 whitespace-nowrap">
-            <h4 className="font-bold text-sx truncate">{post?.name}</h4>
+            <h4 className="font-bold text-sm truncate">{post?.name}</h4>
             <span className="text-xs truncate">
               @{post?.username}
             </span>
@@ -22,11 +23,12 @@ export default function Post({ post, id }) {
           <HiDotsHorizontal className="text-sm" />
         </div>
         <Link href={`/post/${id}`}>
-          <p className="text-gray-800 text-sm my-3">{post?.message}</p>
+          <p className="text-gray-800 text-sm my-3">{post?.text}</p>
         </Link>
         <Link href={`/post/${id}`}>
           <img src={post?.image} className="rounded-2xl mr-2" />
         </Link>
+        <Icons id={id}/>
       </div>
     </div> // <- this was missing
   );
