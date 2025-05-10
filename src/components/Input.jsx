@@ -265,11 +265,159 @@
 // }
 
 
+// "use client";
+// import { useSession } from "next-auth/react";
+// import { HiOutlinePhotograph } from "react-icons/hi";
+// import { useEffect, useRef, useState } from "react";
+// import { db } from "../firebase"; // ✅ FIXED: Correctly import Firestore
+// import { getDownloadURL, ref, uploadBytesResumable, getStorage } from "firebase/storage";
+// import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
+// export default function Input() {
+//     const { data: session } = useSession();
+//     const imagePickRef = useRef(null);
+//     const [imageFileUrl, setImageFileUrl] = useState(null);
+//     const [selectedFile, setSelectedFile] = useState(null);
+//     const [imageFileUploading, setImageFileUploading] = useState(false);
+//     const [text , setText] = useState("");
+//     const [postLoading, setPostLoading] = useState(false);
+
+//     const addImageToPost = (e) => {
+//         const file = e.target.files[0];
+//         if (file) {
+//             setSelectedFile(file);
+//             setImageFileUrl(URL.createObjectURL(file));
+//         }
+//     };
+
+//     useEffect(() => {
+//         if (selectedFile) {
+//             uploadImageToStorage();
+//         }
+//     }, [selectedFile]);
+
+//     const uploadImageToStorage = () => {
+//         if (!selectedFile) return;
+//         setImageFileUploading(true);
+//         const storage = getStorage();
+//         const filename = new Date().getTime() + "-" + selectedFile.name;
+//         const storageRef = ref(storage, filename);
+//         const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+
+//         uploadTask.on(
+//             "state_changed",
+//             (snapshot) => {
+//                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+//                 console.log("Upload is " + progress + "% done");
+//             },
+//             (error) => {
+//                 console.error(error);
+//                 setImageFileUploading(false);
+//                 setImageFileUrl(null);
+//                 setSelectedFile(null);
+//             },
+//             () => {
+//                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+//                     setImageFileUrl(downloadURL);
+//                     setImageFileUploading(false);
+//                 });
+//             }
+//         );
+//     };
+
+//     const handleSubmit = async () => {
+//         setPostLoading(true);
+        
+//         await addDoc(collection(db, "posts"), { // ✅ FIXED: `db` is now correctly used
+//             uid: session.user.uid,
+//             name: session.user.name,
+//             username: session.user.username,
+//             text,
+//             profileImg: session.user.image,
+//             timestamp: serverTimestamp(),
+//             image: imageFileUrl,
+//         });
+
+//         setPostLoading(false);
+//         setText("");
+//         setImageFileUrl(null);
+//         setSelectedFile(null);
+//         location.reload(); // ✅ FIXED: Reload the page after posting
+//     };
+
+//     if (!session) return null;
+
+//     return (
+//         <div className="flex border-b border-gray-200 p-3 space-x-3 w-full">
+//             <img
+//                 src={session.user.image}
+//                 alt="User Image"
+//                 className="w-11 h-11 rounded-full cursor-pointer hover:brightness-95"
+//             />
+//             <div className="w-full divide-y divide-gray-200">
+//                 {/* <textarea
+//                     className="w-full border-none outline-none tracking-wide min-h-[50px] text-gray-700"
+//                     placeholder="What's happening?"
+//                     rows="2"
+//                     value={text}
+//                     onChange={(e) => setText(e.target.value)}
+//                 ></textarea> */}
+
+//                 <textarea
+//   className="w-full border-none outline-none tracking-wide min-h-[50px] text-gray-700"
+//   placeholder="What's happening?"
+//   rows="2"
+//   value={text}
+//   onChange={(e) => {
+//     const inputText = e.target.value;
+//     const filteredText = inputText.replace(/[0-9]/g, ''); // Remove all digits
+//     setText(filteredText);
+//   }}
+// ></textarea>
+
+//                 {selectedFile && (
+//                     <img
+//                     src={imageFileUrl}
+//                     alt="Selected Image"
+//                     className={`w-full max-h-[250px] object-cover rounded-lg cursor-pointer 
+//                     ${imageFileUploading ? "animate-pulse" : ""}`}
+//                     />
+//                 )}
+//                 <div className="flex items-center justify-between pt-2.5">
+//                     <HiOutlinePhotograph
+//                         className="h-10 w-10 p-2 text-sky-500 hover:bg-sky-100 rounded-full cursor-pointer"
+//                         onClick={() => imagePickRef.current.click()}
+//                     />
+//                     <input
+//                         type="file"
+//                         ref={imagePickRef}
+//                         accept="image/*"
+//                         onChange={addImageToPost}
+//                         hidden
+//                     />
+
+//                     <button
+//                         disabled={text.trim() === "" || postLoading || imageFileUploading}
+//                         className="bg-blue-500 text-white px-4 py-1.5 rounded-full font-bold shadow-md hover:brightness-95 disabled:opacity-50"
+//                         onClick={handleSubmit}
+//                     >
+//                         Post
+//                     </button>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// }
+
+
+
+
+
 "use client";
 import { useSession } from "next-auth/react";
 import { HiOutlinePhotograph } from "react-icons/hi";
 import { useEffect, useRef, useState } from "react";
-import { db } from "../firebase"; // ✅ FIXED: Correctly import Firestore
+import { db } from "../firebase";
 import { getDownloadURL, ref, uploadBytesResumable, getStorage } from "firebase/storage";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
@@ -279,8 +427,9 @@ export default function Input() {
     const [imageFileUrl, setImageFileUrl] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [imageFileUploading, setImageFileUploading] = useState(false);
-    const [text , setText] = useState("");
+    const [text, setText] = useState("");
     const [postLoading, setPostLoading] = useState(false);
+    const [showNumberWarning, setShowNumberWarning] = useState(false);
 
     const addImageToPost = (e) => {
         const file = e.target.files[0];
@@ -327,8 +476,8 @@ export default function Input() {
 
     const handleSubmit = async () => {
         setPostLoading(true);
-        
-        await addDoc(collection(db, "posts"), { // ✅ FIXED: `db` is now correctly used
+
+        await addDoc(collection(db, "posts"), {
             uid: session.user.uid,
             name: session.user.name,
             username: session.user.username,
@@ -342,7 +491,7 @@ export default function Input() {
         setText("");
         setImageFileUrl(null);
         setSelectedFile(null);
-        location.reload(); // ✅ FIXED: Reload the page after posting
+        location.reload();
     };
 
     if (!session) return null;
@@ -360,15 +509,25 @@ export default function Input() {
                     placeholder="What's happening?"
                     rows="2"
                     value={text}
-                    onChange={(e) => setText(e.target.value)}
+                    onChange={(e) => {
+                        const inputText = e.target.value;
+                        const hasNumber = /[0-9]/.test(inputText);
+                        const filteredText = inputText.replace(/[0-9]/g, '');
+                        setText(filteredText);
+                        setShowNumberWarning(hasNumber);
+                    }}
                 ></textarea>
+
+                {showNumberWarning && (
+                    <p className="text-red-500 text-sm pt-1">Numbers are not allowed.</p>
+                )}
 
                 {selectedFile && (
                     <img
-                    src={imageFileUrl}
-                    alt="Selected Image"
-                    className={`w-full max-h-[250px] object-cover rounded-lg cursor-pointer 
-                    ${imageFileUploading ? "animate-pulse" : ""}`}
+                        src={imageFileUrl}
+                        alt="Selected Image"
+                        className={`w-full max-h-[250px] object-cover rounded-lg cursor-pointer 
+                        ${imageFileUploading ? "animate-pulse" : ""}`}
                     />
                 )}
                 <div className="flex items-center justify-between pt-2.5">
